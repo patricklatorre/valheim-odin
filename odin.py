@@ -25,10 +25,10 @@ def help():
 
           '<COMMAND>\n'
           ' create <world>            Creates a new server\n'
-          ' start  <world> [-p PORT]  Starts a server. (default port: 2456)\n'
+          ' start  <world> [-p PORT]  Starts a server (default port: 2456)\n'
           ' backup <world>            Backup a world\n'
           ' update <world>            Update server files\n'
-          ' help   <world>            You\'re looking at it\n')
+          ' help                      You\'re looking at it\n')
 
 
 #
