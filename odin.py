@@ -1,15 +1,16 @@
-import sys
 import os
-import subprocess
+import re
 import shutil
+import subprocess
+import sys
+import time
 import urllib.request
 import zipfile
-import re
-import time
 
 # Convenience print funcs
 def nice(s=''): print(f'  ✔ {s}')
 def damn(s=''): print(f'  ✖ {s}')
+
 
 #
 # Help screen
@@ -18,13 +19,16 @@ def help():
 
     print('\n'
           'Usage: python odin.py <COMMAND> <WORLDNAME> [..OPTIONS]\n\n'
-          '    Manage valheim server instances\n\n'
+
+          '    Manage valheim server instances\n'
+          '      (Password is always 123456)\n\n'
+
           '<COMMAND>\n'
-          ' create      Creates a new server\n'
-          ' start       Starts a server\n'
-          ' backup      Backup a world\n'
-          ' update      Update server files\n'
-          ' help        You\'re looking at it\n')
+          ' create <world>            Creates a new server\n'
+          ' start  <world> [-p PORT]  Starts a server. (default port: 2456)\n'
+          ' backup <world>            Backup a world\n'
+          ' update <world>            Update server files\n'
+          ' help   <world>            You\'re looking at it\n')
 
 
 #
@@ -136,7 +140,8 @@ def prerun(args):
 #
 def create(name, update=False):
 
-    server_dir  = odin_path('servers', name)
+    server_dir   = odin_path('servers', name)
+    steamcmd_bin = odin_path('steamcmd', 'steamcmd.exe')
 
     if update and not os.path.exists(server_dir):
         damn(f"Can't update server because it doesn't exist: {server_dir}")
@@ -152,7 +157,7 @@ def create(name, update=False):
 
     # Download server files through steamcmd
     cmd = [
-        'steamcmd', '+login', 'anonymous', 
+        steamcmd_bin, '+login', 'anonymous', 
         '+force_install_dir', server_dir, 
         '+app_update', '896660', 
         'validate', '+exit'
@@ -193,12 +198,12 @@ def start(args):
     # Too lazy to use argparse
     start_args['name'] = args[0]
     args_str = ' '.join(args)
+
+    # Extract port arg
     port = re.match(args_str, r'(?:-p|--port)\s(\d+)')
 
-    if port != None:
-        start_args['port'] = port[0]
-    else:
-        start_args['port'] = '2456'
+    # Use port provided, otherwise default to 2456
+    start_args['port'] = port[0] if port != None else '2456'
 
     spawn_cmd = ( 'cmd /C '
                   'set SteamAppId=892970 && '
