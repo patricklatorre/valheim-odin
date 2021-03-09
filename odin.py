@@ -225,10 +225,13 @@ def main():
     if not prerun(args): 
         exit(1)
 
-    if   args[0] == 'create' : create(args[1])
-    elif args[0] == 'update' : create(args[1], update=True)
-    elif args[0] == 'start'  : start(args[1:])
-    elif args[0] == 'backup' : print("Not implemented lol.")
+    cmd  = args[0]
+    name = args[1]
+
+    if   cmd == 'create' : create(name)
+    elif cmd == 'update' : create(name, update=True)
+    elif cmd == 'start'  : start(args[1:])
+    elif cmd == 'backup' : print("Not implemented lol.")
 
 
 if __name__ == "__main__": main()
